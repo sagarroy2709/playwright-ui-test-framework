@@ -1,6 +1,6 @@
 import { test, expect } from "../fixtures/index.fixture"
 import { InventoryPage } from "../pages/InventoryPage.PO";
-import { LoginPage } from "../pages/loginPage.PO";
+import { LoginPage } from "../pages/LoginPage.PO";
 import { ENV } from "../config/env.config";
 
 test('Standard User Inventory Loads', async ({ standardUserContext }) => {
@@ -15,7 +15,7 @@ test('Locked Out User Inventory Loads', async ({ lockedOutUserContext }) => {
 
     const page = await lockedOutUserContext.newPage();
     const loginPage = new LoginPage(page);
-    loginPage.goto(ENV.BASE_URL);
+    await loginPage.goto(ENV.BASE_URL);
     await loginPage.loginAs(
         ENV.USERS.lockedOutUser.username,
         ENV.USERS.lockedOutUser.password
