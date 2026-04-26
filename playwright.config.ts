@@ -18,11 +18,11 @@ export default defineConfig({
   globalSetup: require.resolve("./config/global-setup"),
   testDir: './tests',
   // /* Run tests in files in parallel */
-  // fullyParallel: true,
+  fullyParallel: true,
   reporter: [
     ['html', { open: 'never' }]
   ],
-  workers: 1,
+  workers: 5,
   timeout: 30*1000,
   expect: {
     timeout: 30*1000,

@@ -5,7 +5,7 @@ type CredentialsFixtures = {
   credentials: Users;
 };
 
-export const test = base.extend<CredentialsFixtures>({
+export const credentialsTest = base.extend<CredentialsFixtures>({
 
   credentials: async ({}, use) => {
     await use(USERS);

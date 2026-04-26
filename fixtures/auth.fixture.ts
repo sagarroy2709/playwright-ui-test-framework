@@ -1,46 +1,55 @@
-import { test as base, expect, Browser, Page } from "@playwright/test";
+import { test as base, Browser, BrowserContext} from "@playwright/test";
 import { ENV } from "../config/env.config";
 
 type AuthFixtures = {
-    standardUserPage: Page;
-    lockedOutUserPage: Page;
-    // problemUserPage: Page;
-    // performanceGlitchUserPage: Page;
-    // errorUserPage: Page;
-    // visualUserPage: Page;
+    standardUserContext: BrowserContext;
+    lockedOutUserContext: BrowserContext;
+    problemUserContext: BrowserContext;
+    performanceGlitchUserContext: BrowserContext;
+    errorUserContext: BrowserContext;
+    visualUserContext: BrowserContext;
 };
 // 
-async function createAuthenticatedPage(browser: Browser,authFile: string,use: (page: Page) => Promise<void>): Promise<void> {
+async function createAuthContext(browser: Browser, authFile: string): Promise<BrowserContext> {
     const context = await browser.newContext({ storageState: authFile });
-    const page = await context.newPage();
-    await page.goto(ENV.BASE_URL);
-    await use(page);
-    await context.close();
+    return context;
 }
 
-export const test = base.extend<AuthFixtures>({
+export const authTest = base.extend<AuthFixtures>({
 
-    standardUserPage: async ({ browser }, use) => {
-        await createAuthenticatedPage(browser, ENV.USERS.standardUser.authFile, use);
+    standardUserContext: async ({ browser }, use) => {
+        const context = await createAuthContext(browser, ENV.USERS.standardUser.authFile);
+        await use(context);
+        await context.close();
     },
 
-    lockedOutUserPage: async ({ browser }, use) => {
-        await createAuthenticatedPage(browser, ENV.USERS.lockedOutUser.authFile, use);
+    lockedOutUserContext: async ({ browser }, use) => {
+        const context = await createAuthContext(browser, ENV.USERS.lockedOutUser.authFile);
+        await use(context);
+        await context.close();
     },
 
-    // problemUserPage: async ({ browser }, use) => {
-    //     await createAuthenticatedPage(browser, ENV.USERS.problemUser.authFile, use);
-    // },
+    problemUserContext: async ({ browser }, use) => {
+        const context = await createAuthContext(browser, ENV.USERS.problemUser.authFile);
+        await use(context);
+        await context.close();
+    },
 
-    // performanceGlitchUserPage: async ({ browser }, use) => {
-    //     await createAuthenticatedPage(browser, ENV.USERS.performanceGlitchUser.authFile, use);
-    // },
+    performanceGlitchUserContext: async ({ browser }, use) => {
+        const context = await createAuthContext(browser, ENV.USERS.performanceGlitchUser.authFile);
+        await use(context);
+        await context.close();
+    },
 
-    // errorUserPage: async ({ browser }, use) => {
-    //     await createAuthenticatedPage(browser, ENV.USERS.errorUser.authFile, use);
-    // },
+    errorUserContext: async ({ browser }, use) => {
+        const context = await createAuthContext(browser, ENV.USERS.errorUser.authFile);
+        await use(context);
+        await context.close();
+    },
 
-    // visualUserPage: async ({ browser }, use) => {
-    //     await createAuthenticatedPage(browser, ENV.USERS.visualUser.authFile, use);
-    // },
+    visualUserContext: async ({ browser }, use) => {
+        const context = await createAuthContext(browser, ENV.USERS.visualUser.authFile);
+        await use(context);
+        await context.close();
+    },
 });

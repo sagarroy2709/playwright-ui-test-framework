@@ -37,26 +37,26 @@ export const USERS = {
         password: required("Locked_Out_User_PASSWORD"),
         authFile: path.join(AUTH_DIR, "locked-out-user.json"),
     },
-    // problemUser: {
-    //     username: required("Problem_User_USERNAME"),
-    //     password: required("Problem_User_PASSWORD"),
-    //     authFile: path.join(AUTH_DIR, "problem-user.json"),
-    // },
-    // performanceGlitchUser: {
-    //     username: required("Performance_Glitch_User_USERNAME"),
-    //     password: required("Performance_Glitch_User_PASSWORD"),
-    //     authFile: path.join(AUTH_DIR, "performance-glitch-user.json"),
-    // },
-    // errorUser: {
-    //     username: required("Error_User_USERNAME"),
-    //     password: required("Error_User_PASSWORD"),
-    //     authFile: path.join(AUTH_DIR, "error-user.json"),
-    // },
-    // visualUser: {
-    //     username: required("Visual_User_USERNAME"),
-    //     password: required("Visual_User_PASSWORD"),
-    //     authFile: path.join(AUTH_DIR, "visual-user.json"),
-    // },
+    problemUser: {
+        username: required("Problem_User_USERNAME"),
+        password: required("Problem_User_PASSWORD"),
+        authFile: path.join(AUTH_DIR, "problem-user.json"),
+    },
+    performanceGlitchUser: {
+        username: required("Performance_Glitch_User_USERNAME"),
+        password: required("Performance_Glitch_User_PASSWORD"),
+        authFile: path.join(AUTH_DIR, "performance-glitch-user.json"),
+    },
+    errorUser: {
+        username: required("Error_User_USERNAME"),
+        password: required("Error_User_PASSWORD"),
+        authFile: path.join(AUTH_DIR, "error-user.json"),
+    },
+    visualUser: {
+        username: required("Visual_User_USERNAME"),
+        password: required("Visual_User_PASSWORD"),
+        authFile: path.join(AUTH_DIR, "visual-user.json"),
+    },
 } as const;
 
 

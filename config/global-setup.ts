@@ -5,6 +5,20 @@ import { LoginPage } from "../pages/loginPage.PO";
 import * as fs from "fs";
 import * as path from "path";
 
+async function globalSetup(config: FullConfig) {
+
+  const browserName = config.projects[0]?.use?.browserName ?? "chromium";
+  const browserType = { chromium, firefox, webkit }[browserName] ?? chromium;
+
+  // Create .auth/ dir once before all parallel logins
+  fs.mkdirSync(path.resolve(process.cwd(), ".auth"), { recursive: true });
+
+  // All users login concurrently — fast even with many users
+  await Promise.all(
+    Object.values(ENV.USERS).map(user => loginAndSave(user, browserType))
+  );
+}
+
 async function loginAndSave(
   credentials: { username: string; password: string, authFile: string }, browserType: BrowserType): Promise<void> {
   const browser = await browserType.launch();
@@ -21,19 +35,4 @@ async function loginAndSave(
     await browser.close();
   }
 }
-
-async function globalSetup(config: FullConfig) {
-
-  const browserName = config.projects[0]?.use?.browserName ?? "chromium";
-  const browserType = { chromium, firefox, webkit }[browserName] ?? chromium;
-
-  // Create .auth/ dir once before all parallel logins
-  fs.mkdirSync(path.resolve(process.cwd(), ".auth"), { recursive: true });
-
-  // All users login concurrently — fast even with many users
-  await Promise.all(
-    Object.values(ENV.USERS).map(user => loginAndSave(user, browserType))
-  );
-}
-
 export default globalSetup; 
