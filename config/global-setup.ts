@@ -1,9 +1,9 @@
 // tests/global-setup.ts
 import { chromium, firefox, webkit, FullConfig, BrowserType } from "@playwright/test";
 import { ENV } from "./env.config";
-import { LoginPage } from "../pages/loginPage.PO";
 import * as fs from "fs";
 import * as path from "path";
+import { LoginPage } from "../pages/LoginPage.PO";
 
 async function globalSetup(config: FullConfig) {
 
