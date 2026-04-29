@@ -14,7 +14,6 @@ on:
   # Go to: Actions → Playwright Tests → Run workflow
   workflow_dispatch:
     inputs:
-
       environment:
         description: "Target environment"
         required: true
@@ -122,6 +121,8 @@ jobs:
       #    On push/PR all inputs are empty so it behaves exactly
       #    as your original "yarn playwright test".
       - name: Run Playwright tests
+        env:
+          ENV: ${{ github.event.inputs.environment }}  # ← reads from dispatch input
         run: |
           CMD="yarn playwright test"
 
