@@ -126,10 +126,10 @@ jobs:
           WORKERS="${{ github.event.inputs.workers }}"
           SUITE="${{ github.event.inputs.suite }}"
 
-          if [ "$BROWSER" = "all" ]; then
-            yarn playwright test --project=chromium --project=firefox --project=webkit
-          else
-            yarn playwright test --project=$BROWSER
+           if [ "$BROWSER" = "all" ]; then
+            CMD="$CMD --project=chromium --project=firefox --project=webkit"
+          elif [ -n "$BROWSER" ]; then
+            CMD="$CMD --project=$BROWSER"
           fi
 
           if [ -n "$WORKERS" ]; then
