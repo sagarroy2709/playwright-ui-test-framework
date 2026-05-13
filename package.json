@@ -7,7 +7,7 @@
     "test:headedWithChromium": "cross-env HEADED=true yarn playwright test --project=chromium",
     "test:firefox": "yarn playwright test --project=firefox",
     "test:webkit": "yarn playwright test --project=webkit",
-    "test:all": "yarn playwright test --project=chromium --project=firefox --project=webkit",
+    "test:allBrowsers": "yarn playwright test --project=chromium --project=firefox --project=webkit",
     "test:ci": "cross-env CI=true yarn playwright test"
   },
   "devDependencies": {

@@ -1,11 +1,10 @@
 import { defineConfig, devices } from '@playwright/test';
 import './config/env.config';  // ← triggers env.config.ts to run
-                               //   dotenv loads the correct .env file
-                               //   process.env.BASE_URL is now populated
+//   dotenv loads the correct .env file
+//   process.env.BASE_URL is now populated
 
 export default defineConfig({
-  //below line logs into the application and create the storageState json for different users
-  globalSetup: require.resolve("./config/global-setup"),
+
   testDir: './tests',
   // /* Run tests in files in parallel */
   fullyParallel: true,
@@ -29,9 +28,13 @@ export default defineConfig({
 
   // all projects always defined — --project flag filters at run time through --projects CLI flag
   projects: [
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-    { name: 'firefox',  use: { ...devices['Desktop Firefox'] } },
-    { name: 'webkit',   use: { ...devices['Desktop Safari'] } },
+    // Runs once — logs in all 6 users, writes flat auth files to .auth/
+    { name: "setup", testDir: "./config", testMatch: /auth\.setup\.ts/ },
+
+    // All three depend on the single setup — setup never runs more than once
+    { name: "chromium", use: { ...devices["Desktop Chrome"] }, dependencies: ["setup"] },
+    { name: "firefox", use: { ...devices["Desktop Firefox"] }, dependencies: ["setup"] },
+    { name: "webkit", use: { ...devices["Desktop Safari"] }, dependencies: ["setup"] },
   ],
 
 });
