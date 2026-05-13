@@ -5,6 +5,7 @@ import './config/env.config';  // ← triggers env.config.ts to run
 
 export default defineConfig({
 
+  retries: process.env.CI ? 1 : 0,
   testDir: './tests',
   // /* Run tests in files in parallel */
   fullyParallel: true,
@@ -22,7 +23,8 @@ export default defineConfig({
   },
   use: {
     baseURL: process.env.BASE_URL,
-    trace: 'on-first-retry',
+    // trace: 'on-first-retry',
+    trace: 'retain-on-failure',
     headless: process.env.HEADED !== 'true',
   },
 
