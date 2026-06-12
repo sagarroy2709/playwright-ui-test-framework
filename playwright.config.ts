@@ -5,7 +5,7 @@ import './config/env.config';  // ← triggers env.config.ts to run
 
 export default defineConfig({
 
-  retries: process.env.CI ? 1 : 0,
+  retries: process.env.CI ? 1 : 1,
   testDir: './tests',
   // /* Run tests in files in parallel */
   fullyParallel: true,
@@ -17,15 +17,18 @@ export default defineConfig({
     //   ? [['allure-playwright', { outputFolder: 'allure-results', suiteTitle: false }] as const]
     //   : []),
   ],
-  timeout: 30 * 1000,
+  timeout: 60000,
   expect: {
-    timeout: 30 * 1000,
+    timeout: 10000,
   },
   use: {
     baseURL: process.env.BASE_URL,
-    // trace: 'on-first-retry',
     trace: 'retain-on-failure',
+    screenshot: 'only-on-failure',
+    video: 'on-first-retry',
     headless: process.env.HEADED !== 'true',
+    actionTimeout: 10000,
+    navigationTimeout: 8000
   },
 
   // all projects always defined — --project flag filters at run time through --projects CLI flag

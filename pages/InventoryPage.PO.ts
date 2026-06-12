@@ -16,4 +16,7 @@ export class InventoryPage extends BasePage {
         // await expect(this.page).not.toHaveURL(/.*inventory/); //Fails
     }
 
+    protected async waitForPageLoad(): Promise<void> {
+        //locators not added yet
+    }
 }

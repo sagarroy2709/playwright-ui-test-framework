@@ -2,7 +2,7 @@ import { Page, Locator, expect } from "@playwright/test"
 import { BasePage } from "./BasePage";
 
 export class LoginPage extends BasePage {
-
+    
     protected readonly path = '/';
     private readonly usernameInput: Locator;
     private readonly passwordInput: Locator;
@@ -18,15 +18,15 @@ export class LoginPage extends BasePage {
     }
 
     private async fillUsername(username: string) {
-        await this.usernameInput.fill(username);
+        await this.fill(this.usernameInput, username);
     }
 
     private async fillPassword(password: string) {
-        await this.passwordInput.fill(password);
+        await this.fill(this.passwordInput, password);
     }
 
     private async submit() {
-        await this.signInButton.click();
+        await this.click(this.signInButton);
     }
 
     async loginAs(username: string, password: string) {
@@ -36,8 +36,12 @@ export class LoginPage extends BasePage {
     }
 
     async verifyLockedoutMessageForLockedOutUser() {
-        // await expect(this.lockedOutLabel).toBeVisible();
-        await expect(this.lockedOutLabel).not.toBeVisible();
+        await expect(this.lockedOutLabel).toBeVisible();
+        // await expect(this.lockedOutLabel).not.toBeVisible();
+    }
+
+    protected async waitForPageLoad(): Promise<void> {
+        await this.usernameInput.waitFor({state: 'visible'});
     }
 
 }
