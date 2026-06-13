@@ -51,37 +51,11 @@ on:
           - "true"
 
 jobs:
-  # ── 1. Preparation Job: Decides the execution matrix ──────────
-  setup-matrix:
-    runs-on: ubuntu-latest
-    outputs:
-      browser_matrix: ${{ steps.set-matrix.outputs.browser_matrix }}
-    steps:
-      - id: set-matrix
-        run: |
-          CHOICE="${{ github.event.inputs.browser }}"
-          # If triggered by a PR or user selects 'all', pass the full array.
-          # Otherwise, pass just the single chosen browser.
-          if [ -z "$CHOICE" ] || [ "$CHOICE" = "all" ]; then
-            echo "browser_matrix=[\"chromium\", \"firefox\", \"webkit\"]" >> $GITHUB_OUTPUT
-          else
-            echo "browser_matrix=[\"$CHOICE\"]" >> $GITHUB_OUTPUT
-          fi
-
-  # ── 2. Execution Job: Runs in parallel across the matrix ──────
   test:
-    needs: setup-matrix
-    runs-on: ubuntu-latest
+    name: "${{ github.event.inputs.environment || 'test' }} | ${{ github.event.inputs.browser || 'all' }} | workers=${{ github.event.inputs.workers || 'default' }} | suite=${{ github.event.inputs.suite || 'all' }}"
     timeout-minutes: 60 
+    runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.environment || 'test' }}
-    
-    strategy:
-      fail-fast: false # Prevents one browser failure from instantly killing the other browser runs
-      matrix:
-        browser: ${{ fromJson(needs.setup-matrix.outputs.browser_matrix) }}
-
-    # Dynamically updates the UI label to show exactly which browser this worker is processing
-    name: "${{ github.event.inputs.environment || 'test' }} | ${{ matrix.browser }} | workers=${{ github.event.inputs.workers || 'default' }} | suite=${{ github.event.inputs.suite || 'all' }}"
 
     steps:
       # ── 1. Checkout ──────────────────────────────────────────
@@ -91,7 +65,9 @@ jobs:
       - name: Enable Corepack
         run: corepack enable
 
-      # ── 3. Node + Yarn cache ─────────────────────────────────
+      # ── 3. Pinned Node Engine + Yarn cache (Enterprise Best Practice) ──
+      #    We pin this strictly to 22.22.2 to match your local setup exactly.
+      #    This prevents random cloud updates from breaking your pipeline.
       - uses: actions/setup-node@v4
         with:
           node-version: '22.22.2'
@@ -101,8 +77,9 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      # ── 5. Enterprise Browser Caching ─────────────────────────
-      #    Every matrix machine downloads the exact same unified cache file
+      # ── 5. Enterprise Dynamic Cache Key ───────────────────────
+      #    Anchored strictly to your yarn.lock file. Ensures your cloud 
+      #    environment populates a single, complete directory.
       - name: Cache Playwright Browsers
         id: playwright-cache
         uses: actions/cache@v4
@@ -111,18 +88,23 @@ jobs:
           key: ${{ runner.os }}-playwright-${{ hashFiles('**/yarn.lock') }}
 
       # ── 6. Deterministic Browser Provisioning ─────────────────
+      #    On a cache miss, we ALWAYS download the entire browser block.
+      #    This ensures Chromium is present for your background auth project, 
+      #    even when a developer manually selects 'firefox' via the UI dropdown.
       - name: Install Playwright Browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: yarn playwright install
 
       # ── 7. Explicit Linux Dependencies ────────────────────────
+      #    Decoupled to stop the async extraction deadlock loop.
+      #    We pass explicit targets to the package manager and bypass host
+      #    validations to prevent Ubuntu 24.04 from throwing false alarms.
       - name: Install Playwright Operating System Dependencies
         env:
           PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS: 1
         run: yarn playwright install-deps chromium firefox webkit
 
       # ── 8. Run Playwright tests ───────────────────────────────
-      #    We now feed the specific matrix browser straight to Playwright
       - name: Run Playwright tests
         env:
           ENV:                              ${{ github.event.inputs.environment || 'test' }}
@@ -140,10 +122,17 @@ jobs:
           ERROR_USER_PASSWORD:              ${{ secrets.ERROR_USER_PASSWORD }}
           VISUAL_USER_PASSWORD:             ${{ secrets.VISUAL_USER_PASSWORD }}
         run: |
-          CMD="yarn playwright test --project=${{ matrix.browser }}"
+          CMD="yarn playwright test"
 
+          BROWSER="${{ github.event.inputs.browser }}"
           WORKERS="${{ github.event.inputs.workers }}"
           SUITE="${{ github.event.inputs.suite }}"
+
+          if [ "$BROWSER" = "all" ]; then
+            CMD="$CMD --project=chromium --project=firefox --project=webkit"
+          elif [ -n "$BROWSER" ]; then
+            CMD="$CMD --project=$BROWSER"
+          fi
 
           if [ -n "$WORKERS" ]; then
             CMD="$CMD --workers=$WORKERS"
@@ -157,12 +146,11 @@ jobs:
           sh -c "$CMD"
 
       # ── 9. Upload report ─────────────────────────────────────
-      #    We append the matrix browser to the artifact name so they don't overwrite each other
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
-          name: playwright-report-${{ github.event.inputs.environment || 'test' }}-${{ matrix.browser }}
+          name: playwright-report-${{ github.event.inputs.environment || 'test' }}-${{ github.event.inputs.browser || 'all' }}
           path: playwright-report/
           retention-days: 30
       
@@ -171,7 +159,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ github.event.inputs.allure == 'true' && !cancelled() }}
         with:
-          name: allure-report-${{ github.event.inputs.environment || 'test' }}-${{ matrix.browser }}
+          name: allure-report-${{ github.event.inputs.environment || 'test' }}-${{ github.event.inputs.browser || 'all' }}
           path: allure-report/
           retention-days: 30
 
@@ -180,6 +168,6 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
-          name: playwright-traces-${{ github.event.inputs.environment || 'test' }}-${{ matrix.browser }}
+          name: playwright-traces-${{ github.event.inputs.environment || 'test' }}-${{ github.event.inputs.browser || 'all' }}
           path: test-results/
           retention-days: 30
