@@ -27,8 +27,8 @@ on:
         type: choice
         options:
           - chromium
-          # - firefox
-          # - webkit
+          - firefox
+          - webkit
           # - all           # Runs every project defined in playwright.config.ts
 
       suite:
