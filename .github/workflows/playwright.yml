@@ -27,9 +27,9 @@ on:
         type: choice
         options:
           - chromium
-          - firefox
-          - webkit
-          - all           # Runs every project defined in playwright.config.ts
+          # - firefox
+          # - webkit
+          # - all           # Runs every project defined in playwright.config.ts
 
       suite:
         description: "Test suite or tag to run (e.g. @smoke, @regression, or a filename)"
