@@ -77,7 +77,9 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      # ── 5. Enterprise Best Practice: Browser Caching ──────────
+      # ── 5. Standard Cache Key (Enterprise Best Practice) ──────
+      #    We tie the cache key solely to the OS and the yarn.lock hash.
+      #    This means your pipeline retains a single, complete backup folder.
       - name: Cache Playwright Browsers
         id: playwright-cache
         uses: actions/cache@v4
@@ -85,17 +87,13 @@ jobs:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('**/yarn.lock') }}
 
-      # ── 6. Install Playwright browsers ───────────────────────
-      #    Removed '--with-deps' to eliminate the Node async extraction loop bug.
+      # ── 6. Deterministic Browser Provisioning ─────────────────
+      #    On a cache miss, we ALWAYS download the entire browser suite.
+      #    This guarantees that Chromium is present for your global auth setup,
+      #    even when you filter your actual tests down to run only Firefox.
       - name: Install Playwright Browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: |
-          BROWSER="${{ github.event.inputs.browser }}"
-          if [ -z "$BROWSER" ] || [ "$BROWSER" = "all" ]; then
-            yarn playwright install
-          else
-            yarn playwright install $BROWSER
-          fi
+        run: yarn playwright install
 
       # ── 7. Install System Dependencies Separately ─────────────
       #    Isolating this step ensures Ubuntu handles the system packages cleanly.
