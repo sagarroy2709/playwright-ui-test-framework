@@ -77,9 +77,9 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      # ── 5. Standard Cache Key (Enterprise Best Practice) ──────
-      #    We tie the cache key solely to the OS and the yarn.lock hash.
-      #    This means your pipeline retains a single, complete backup folder.
+      # ── 5. Enterprise Dynamic Cache Key ───────────────────────
+      #    Anchored strictly to your yarn.lock file. Ensures your cloud 
+      #    environment populates a single, complete directory.
       - name: Cache Playwright Browsers
         id: playwright-cache
         uses: actions/cache@v4
@@ -88,17 +88,21 @@ jobs:
           key: ${{ runner.os }}-playwright-${{ hashFiles('**/yarn.lock') }}
 
       # ── 6. Deterministic Browser Provisioning ─────────────────
-      #    On a cache miss, we ALWAYS download the entire browser suite.
-      #    This guarantees that Chromium is present for your global auth setup,
-      #    even when you filter your actual tests down to run only Firefox.
+      #    On a cache miss, we ALWAYS download the entire browser block.
+      #    This ensures Chromium is present for your background auth project, 
+      #    even when a developer manually selects 'firefox' via the UI dropdown.
       - name: Install Playwright Browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: yarn playwright install
 
-      # ── 7. Install System Dependencies Separately ─────────────
-      #    Isolating this step ensures Ubuntu handles the system packages cleanly.
+      # ── 7. Explicit Linux Dependencies ────────────────────────
+      #    Decoupled to stop the async extraction deadlock loop.
+      #    We pass explicit targets to the package manager and bypass host
+      #    validations to prevent Ubuntu 24.04 from throwing false alarms.
       - name: Install Playwright Operating System Dependencies
-        run: yarn playwright install-deps
+        env:
+          PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS: 1
+        run: yarn playwright install-deps chromium firefox webkit
 
       # ── 8. Run Playwright tests ───────────────────────────────
       - name: Run Playwright tests
