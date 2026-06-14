@@ -5,7 +5,7 @@ import './config/env.config';  // ← triggers env.config.ts to run
 
 export default defineConfig({
 
-  retries: process.env.CI ? 1 : 1,
+  retries: process.env.CI ? 2 : 1,
   testDir: './tests',
   // /* Run tests in files in parallel */
   fullyParallel: true,

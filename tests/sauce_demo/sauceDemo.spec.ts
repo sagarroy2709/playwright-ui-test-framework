@@ -1,7 +1,7 @@
-import { test, expect } from "../fixtures/index.fixture"
-import { InventoryPage } from "../pages/InventoryPage.PO";
-import { LoginPage } from "../pages/LoginPage.PO";
-import { ENV } from "../config/env.config";
+import { test, expect } from "fixtures/index.fixture"
+import { InventoryPage } from "pages/InventoryPage.PO";
+import { LoginPage } from "pages/LoginPage.PO";
+import { ENV } from "config/env.config";
 
 test('Standard User Inventory Loads', async ({ standardUserContext, logger }) => {
 
