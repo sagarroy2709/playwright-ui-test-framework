@@ -123,7 +123,7 @@ jobs:
 
       # ── 8. Run Playwright tests ───────────────────────────────
       #    We now feed the specific matrix browser straight to Playwright
-      - name: Run Playwright tests
+      - name: Run Playwright tests for sauce demo
         env:
           ENV:                              ${{ github.event.inputs.environment || 'test' }}
           BASE_URL:                         ${{ vars.BASE_URL }}

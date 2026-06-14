@@ -34,12 +34,17 @@ export default defineConfig({
   // all projects always defined — --project flag filters at run time through --projects CLI flag
   projects: [
     // Runs once — logs in all 6 users, writes flat auth files to .auth/
-    { name: "setup", testDir: "./config", testMatch: /auth\.setup\.ts/ },
+    { name: "sauce_demo_auth_setup", testDir: "./config", testMatch: /sauce_demo_auth\.setup\.ts/ },
+    { name: "salesforce_auth_setup", testDir: "./config", testMatch: /salesforce_auth\.setup\.ts/ },
 
+    // ── SauceDemo test projects ───────────────────────────────────────
     // All three depend on the single setup — setup never runs more than once
-    { name: "chromium", use: { ...devices["Desktop Chrome"] }, dependencies: ["setup"] },
-    { name: "firefox", use: { ...devices["Desktop Firefox"] }, dependencies: ["setup"] },
-    { name: "webkit", use: { ...devices["Desktop Safari"] }, dependencies: ["setup"] },
+    { name: "chromium", use: { ...devices["Desktop Chrome"] }, dependencies: ["sauce_demo_auth_setup"], testMatch: "**/sauce_demo/**/*.spec.ts", },
+    { name: "firefox", use: { ...devices["Desktop Firefox"] }, dependencies: ["sauce_demo_auth_setup"], testMatch: "**/sauce_demo/**/*.spec.ts", },
+    { name: "webkit", use: { ...devices["Desktop Safari"] }, dependencies: ["sauce_demo_auth_setup"], testMatch: "**/sauce_demo/**/*.spec.ts", },
+
+    // ── Salesforce test projects ──────────────────────────────────────
+    { name: "sf_chromium", use: { ...devices["Desktop Chrome"] }, dependencies: ["salesforce_auth_setup"], testMatch: "**/salesforce/**/*.spec.ts", },
   ],
 
 });

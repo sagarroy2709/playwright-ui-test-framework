@@ -8,7 +8,7 @@ test('Standard User Inventory Loads', async ({ standardUserContext, logger }) =>
     const page = await standardUserContext.newPage();
     const inventoryPage = new InventoryPage(page);
 
-    await logger.step(`Navigate to Inventory page for ${ENV.USERS.standardUser.username}`, async () => {
+    await logger.step(`Navigate to Inventory page for ${ENV.SAUCE_DEMO.USERS.standardUser.username}`, async () => {
         await inventoryPage.goto();
     });
     await inventoryPage.assertInventoryPageLoaded();
@@ -18,12 +18,12 @@ test('Locked Out User Inventory Loads', async ({ lockedOutUserContext, logger })
 
     const page = await lockedOutUserContext.newPage();
     const loginPage = new LoginPage(page);
-    await logger.step(`Navigate to Login page for ${ENV.USERS.lockedOutUser.username}`, async () => {
-        await page.goto(ENV.BASE_URL);
+    await logger.step(`Navigate to Login page for ${ENV.SAUCE_DEMO.USERS.lockedOutUser.username}`, async () => {
+        await page.goto(ENV.SAUCE_DEMO.BASE_URL);
     });
     await loginPage.loginAs(
-        ENV.USERS.lockedOutUser.username,
-        ENV.USERS.lockedOutUser.password
+        ENV.SAUCE_DEMO.USERS.lockedOutUser.username,
+        ENV.SAUCE_DEMO.USERS.lockedOutUser.password
     );
     await loginPage.verifyLockedoutMessageForLockedOutUser();
 });
@@ -32,7 +32,7 @@ test('Problem User Inventory Loads', async ({ problemUserContext, logger }) => {
 
     const page = await problemUserContext.newPage();
     const inventoryPage = new InventoryPage(page);
-    await logger.step(`Navigate to Inventory page for ${ENV.USERS.problemUser.username}`, async () => {
+    await logger.step(`Navigate to Inventory page for ${ENV.SAUCE_DEMO.USERS.problemUser.username}`, async () => {
         await inventoryPage.goto();
     });
     await inventoryPage.assertInventoryPageLoaded();
@@ -44,7 +44,7 @@ test('Performance Glitch User Page Inventory Loads', async ({ performanceGlitchU
 
     const page = await performanceGlitchUserContext.newPage();
     const inventoryPage = new InventoryPage(page);
-    await logger.step(`Navigate to Inventory page for ${ENV.USERS.performanceGlitchUser.username}`, async () => {
+    await logger.step(`Navigate to Inventory page for ${ENV.SAUCE_DEMO.USERS.performanceGlitchUser.username}`, async () => {
         await inventoryPage.goto();
     });
     await inventoryPage.assertInventoryPageLoaded();
@@ -55,7 +55,7 @@ test('Error User Page Inventory Loads', async ({ errorUserContext, logger }) => 
 
     const page = await errorUserContext.newPage();
     const inventoryPage = new InventoryPage(page);
-    await logger.step(`Navigate to Inventory page for ${ENV.USERS.errorUser.username}`, async () => {
+    await logger.step(`Navigate to Inventory page for ${ENV.SAUCE_DEMO.USERS.errorUser.username}`, async () => {
         await inventoryPage.goto();
     });
     await inventoryPage.assertInventoryPageLoaded();
@@ -66,7 +66,7 @@ test('Visual User Page Inventory Loads', async ({ visualUserContext, logger }) =
 
     const page = await visualUserContext.newPage();
     const inventoryPage = new InventoryPage(page);
-    await logger.step(`Navigate to Inventory page for ${ENV.USERS.visualUser.username}`, async () => {
+    await logger.step(`Navigate to Inventory page for ${ENV.SAUCE_DEMO.USERS.visualUser.username}`, async () => {
         await inventoryPage.goto();
     });
     await inventoryPage.assertInventoryPageLoaded();
